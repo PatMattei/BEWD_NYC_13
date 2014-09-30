@@ -11,7 +11,7 @@
 # definition below.
 class Post
   def title=(submitted_title)
-    title = submitted_title
+    @title = submitted_title
   end
 
   def title
@@ -19,7 +19,7 @@ class Post
   end
 
   def author=(submitted_author)
-    author = submitted_title
+    @author = submitted_author
   end
 
   def author
@@ -27,7 +27,7 @@ class Post
   end
 
   def body=(submitted_body)
-    body = submitted_body
+    @body = submitted_body
   end
 
   def body
@@ -41,7 +41,7 @@ end
 # three attributes: first_name, last_name and email.
 class Author
   def first_name=(submitted_first_name)
-    submitted_first_name    
+    @first_name = submitted_first_name    
   end
 
   def first_name
@@ -49,7 +49,7 @@ class Author
   end
 
   def last_name=(submitted_last_name)
-    submitted_last_name    
+    @last_name = submitted_last_name    
   end
 
   def last_name
@@ -57,13 +57,12 @@ class Author
   end
 
   def email=(submitted_email)
-    submitted_email    
+    @email = submitted_email    
   end
 
   def email
     @email
   end
-
 
   # Once the class is defined, create a method called `full_name` which uses
   # string interpolation to join together the first_name and last_name and
@@ -110,7 +109,7 @@ while ask_for_posts == true
   # Inside of this loop, we're going to ask the user to input the various
   # attributes of their blog post. Let's start by instantiating a new Post and
   # storing it in a variable called `post`.
-
+  post = Post.new
 
   # The below line simply displays on the screen a request for the user to
   # input the title of their post. There should be no need to edit this line.
@@ -118,7 +117,7 @@ while ask_for_posts == true
 
   # Next, let's use `gets.strip` and store the contents in the title attribute
   # of the newly instantiated `post` object that you created above.
-
+  post.title = gets.strip
 
   # The below line simply displays on the screen a request for the user to
   # input the body of their post. There should be no need to edit this line.
@@ -126,14 +125,14 @@ while ask_for_posts == true
 
   # Next, let's use `gets.strip` and store the contents in the body attribute
   # of the newly instantiated `post` object that you created above.
-
+  post.body = gets.strip
 
   # Lastly, before we finalize this post, let's be sure to populate the
   # `author` attribute of the newly instantiated `post` object that you created
   # above. Since we have a variable called `author` which we populated in the
   # welcome message of the application, we already know who the user is. Let's
   # store the _entire_ author variable inside of the author attribute of Post.
-
+  post.author = author
 
   # This line will add the current `post` to the `posts` array. There should be
   # no need to edit this line.
