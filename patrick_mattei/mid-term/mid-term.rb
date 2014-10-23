@@ -5,12 +5,11 @@ require "geocoder"
 require_relative "lib/garages"
 require_relative "lib/destinations"
 
-
 def create_destination
-  puts"What is the next destination you need to find parking near?  You can enter a zip code, building name, or address."
-  input = Geocoder.search(gets.strip).first.coordinates
-
-  Destination.new(input)
+  puts "What is the next destination you need to find parking near?  You can enter a zip code, building name, or address."
+  input = gets.strip.to_s
+  input_coordinates = Geocoder.search(input).first.coordinates
+  Destination.new(input_coordinates)
 end
 
 
@@ -18,31 +17,29 @@ def create_garage
   destination = create_destination
   input = destination.input
 
-  url = 'https://data.cityofnewyork.us/api/views/xbtj-c7ca/rows.json'
-  response = RestClient.get(url)
-  parsed_response = JSON.parse(response)
-  
+  json_file = File.read('merged_coordinates_dataset.json')
+  coordinates_file = JSON.parse(json_file)
 
-  parking_garages = parsed_response['data'].map do |garage|
+  parking_garages = coordinates_file["data"].map do |garage|
     {
-      name: garage[10],
-      coordinates: [garage[12][1].to_f, garage[12][2].to_f],
-      zip: garage[13],
-      size: garage[15],
-      phone: garage[14],
-      address: garage[12][0]
+      name: garage[9],
+      coordinates: [garage[24][0].to_f, garage[24][1].to_f],
+      zip: garage[18],
+      size: garage[22],
+      phone: garage[21],
+      address: garage[13]
     }
-  end 
+  end
 
   distances = parking_garages.map do |garage|
-    garage.merge({distance_between: Geocoder::Calculations.distance_between(input, garage[:coordinates])
-    })
+    Geocoder.configure(:timeout => 15)
+    garage.merge({distance_between: Geocoder::Calculations.distance_between(input, garage[:coordinates])})   
   end
 
   closest = distances.sort_by { |garage| garage[:distance_between] }.first
-  
+
   garage_zip = closest[:zip]
-  garage_address = closest[:address].delete('{' '}').gsub!('"', ' ').gsub(/\w+/, &:capitalize).gsub(' : ', ': ').gsub(' , ', ', ').gsub("State: Ny", "State: NY")
+  garage_address = closest[:address]
   garage_phone = closest[:phone]
   garage_size = closest[:size]
   garage_name = closest[:name]
@@ -50,6 +47,7 @@ def create_garage
 
   Garage.new(garage_zip, garage_address, garage_phone, garage_size, garage_name)
 end
+
 
 
 
@@ -109,3 +107,6 @@ until user_response == "quit"
 end
 puts
 puts "Thank you for using the NYC Parking Lot Locator."
+
+
+#url = 'https://data.cityofnewyork.us/api/views/r4rz-9ajc/rows.json'
